@@ -12,16 +12,16 @@ int main (){
     salle[0].prix = 50;
 
     // Catégorie 2 : fausse au centre de la salle
-    salle[0].categorie = 2;
-    salle[0].nbPlaces = 150;
-    salle[0].dispo = 150;
-    salle[0].prix = 30;
+    salle[1].categorie = 2;
+    salle[1].nbPlaces = 150;
+    salle[1].dispo = 150;
+    salle[1].prix = 30;
 
     // Catégorie 3 : Tribunes supérieures
-    salle[0].categorie = 3;
-    salle[0].nbPlaces = 100;
-    salle[0].dispo = 100;
-    salle[0].prix = 20;
+    salle[2].categorie = 3;
+    salle[2].nbPlaces = 100;
+    salle[2].dispo = 100;
+    salle[2].prix = 20;
 
     // connexion à concert
     int socket_places;
