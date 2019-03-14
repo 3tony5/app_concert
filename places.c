@@ -7,42 +7,63 @@ int main (){
 
     // Catégorie 1 : à proximité de la scène
     salle[0].categorie = 1;
-    salle[0].nbPlaces = 100;
-    salle[0].dispo = 100;
+    salle[0].nbPlaces = 50;
+    salle[0].dispo = 50;
     salle[0].prix = 50;
 
     // Catégorie 2 : fausse au centre de la salle
     salle[0].categorie = 2;
-    salle[0].nbPlaces = 350;
-    salle[0].dispo = 350;
+    salle[0].nbPlaces = 150;
+    salle[0].dispo = 150;
     salle[0].prix = 30;
 
     // Catégorie 3 : Tribunes supérieures
     salle[0].categorie = 3;
-    salle[0].nbPlaces = 220;
-    salle[0].dispo = 210;
+    salle[0].nbPlaces = 100;
+    salle[0].dispo = 100;
     salle[0].prix = 20;
 
-// connexion à concert
+    // connexion à concert
+    int socket_places;
+    struct sockaddr_in adresse_places;
+    int lgadresse_places;
+   
+   if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	{
+	  	perror("creation socket");
+	  	exit(1);
+	}
+	
+	adresse_places.sin_family = AF_INET;
+	adresse_places.sin_port = htons(PORT_PLACES);
+	adresse_places.sin_addr.s_addr = htonl(INADDR_ANY);
+	
+	lgadresse_places = sizeof(adressePLACES);
+	
+	if ((bind(socket_places, (struct sockaddr *) &adresse_places, lgadresse_places)) == -1)
+	{
+	  	perror("bind");
+	  	exit(2);
+	}
 
-// while 1
+    // while 1
 
-//attend information transactions
+    //attend information transactions
 
-// si transactions>0
+    // si transactions>0
 
-// places->categories =+ transactions
+    // places->categories =+ transactions
 
-//envoie transactions à concert
+    //envoie transactions à concert
 
-//sinon pour i de 0 à transaction
+    //sinon pour i de 0 à transaction
 
-//places->categories =- 1
-// if places == 0 envoie transactions+i break?
+    //places->categories =- 1
+    // if places == 0 envoie transactions+i break?
 
-//fin si
-//fin pour
-//fin while
+    //fin si
+    //fin pour
+    //fin while
 
-return 0;
+    return EXIT_SUCCESS;
 }
