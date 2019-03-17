@@ -16,6 +16,18 @@
 #include <unistd.h>
 
 #include "gestionnaire_concert.h"
+// fonctionnement du thread
+// le thread possede en parametre le numero de la sock du client achat.c
+//entete
+// initialise/paretre connexion
+
+//while transaction fini
+
+// lit données achat
+
+// envoie des données à places
+
+
 
 int main(int argc, char **argv)
 {
