@@ -72,7 +72,7 @@ int main (){
 
     
     //lecture debut transaction
-        if(read(sock,&places,sizeof(places))<0)
+        if(read(sock,&place,sizeof(places))<0)
         {
             perror("read");
             exit(3);
@@ -86,7 +86,7 @@ int main (){
     // places->categories =+ transactions
             salle[places.categories-1]=salle[places.categories-1] + places.nbPlaces;
     //envoie transactions à concert
-            if (write(sock,places,sizeof (places))!=sizeof(places)){
+            if (write(sock,place,sizeof (places))!=sizeof(places)){
 
                 perror("write");
                 exit(3);
@@ -96,7 +96,7 @@ int main (){
             // compte le nombre de place reservable 
             places = compteplaces(places);
             // renvoie le nombre de reservé 
-             if (write(sock,places,sizeof (places))!=sizeof(places)){
+             if (write(sock,place,sizeof (places))!=sizeof(places)){
 
                 perror("write");
                 exit(3);
