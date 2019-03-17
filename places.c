@@ -1,3 +1,5 @@
+//J'ai changé le types places afin de pouvoir l'utilisé également pour les commandes. A VOIR ! 
+
 
 //ci-dessous l'application places qui va contabilisé le nombres de places disponibles pour l'application concert.
 #include "gestionnaire_concert.h"
