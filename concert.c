@@ -21,11 +21,40 @@
 //entete
 // initialise/paretre connexion
 
-//while transaction fini
+//while transaction non fini
 
 // lit données achat
 
-// envoie des données à places
+// envoie des données à places (nb places - nb déja réservé)
+
+//lit la réponse de places
+
+//envoie la réponse de places à achat;
+
+//si nb places demandé == nbplaces reservé
+
+//envoie prix 
+
+//attend code carte bleu
+
+//envoie ok
+// reset nb places reservé à 0
+
+//fin transaction
+
+//fin si
+
+//si nb places réservé ==0
+
+// fin transaction
+
+// fin si sinon
+
+// fin while
+
+// rend le nombre de reservé a places.c
+
+
 
 
 
