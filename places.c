@@ -1,4 +1,20 @@
 //ci-dessous l'application places qui va contabilisé le nombres de places disponibles pour l'application concert.
+#define _GNU_SOURCE
+
+#include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "gestionnaire_concert.h"
 
 int main (){
@@ -23,7 +39,7 @@ int main (){
     salle[2].dispo = 100;
     salle[2].prix = 20;
 
-    // connexion à concert
+    // mise en place de la socket pour connexion avec concert
     int socket_places;
     struct sockaddr_in adresse_places;
     int lgadresse_places;
@@ -46,24 +62,25 @@ int main (){
 	  	exit(2);
 	}
 
-    // while 1
+    while (true)
+    {
+        //attend information transactions
 
-    //attend information transactions
+        // si transactions>0
 
-    // si transactions>0
+        // places->categories =+ transactions
 
-    // places->categories =+ transactions
+        //envoie transactions à concert
 
-    //envoie transactions à concert
+        //sinon pour i de 0 à transaction
 
-    //sinon pour i de 0 à transaction
+        //places->categories =- 1
+        // if places == 0 envoie transactions+i break?
 
-    //places->categories =- 1
-    // if places == 0 envoie transactions+i break?
+        //fin si
+        //fin pour
 
-    //fin si
-    //fin pour
-    //fin while
+    }
 
     return EXIT_SUCCESS;
 }
