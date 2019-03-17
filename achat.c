@@ -17,7 +17,7 @@
 
 int main(){
     int transFini=0;
-    int codeBancaire
+    int codeBancaire,prix;
     places achat, vente;
     char  validation[200];
     // etablir la connexion avec concert
@@ -49,9 +49,15 @@ int main(){
     //si nbautorisé = nbdemandé
         if(vente.nbPlaces==achat.nbPlaces){
 
+if(read(sock,&prix,sizeof(int))<0)
+        {
+            perror("read");
+            exit(3);
 
+        }
     //demandé et envoyer code carte bleu
-            printf("veillez entrez votre code de carte bleu");
+            printf ("cela vous fera %i \n",prix);
+            printf("veillez entrez votre code de carte bleu\n");
             scanf("%i",&codeBancaire);
              if (write(sock,codeBancaire,sizeof (places))!=sizeof(places)){
 
