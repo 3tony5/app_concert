@@ -19,6 +19,34 @@
 
 int main(int argc, char **argv)
 {
+	// mise en place de la socket concert
+	int socket_concert;
+	struct sockaddr_in adresse_concert;
+	int lgadresse_concert;
+   
+	if ((socket_CONCERT = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	{
+		perror("creation socket concert");
+		exit(1);
+	}
+
+	adresse_concert.sin_family = AF_INET;
+	adresse_concert.sin_port = htons(PORT_CONCERT);
+	adresse_concert.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	lgadresse_concert = sizeof(adresse_concert);
+
+	if ((bind(socket_concert, (struct sockaddr *) &adresse_concert, lgadresse_concert)) == -1)
+	{
+		perror("bind concert");
+	  	exit(2);
+	}
+
+
+
+
+
+	// -------------------------------------------------
 	// mise en place de la socket pour connexion à concert
     int socket_PLACES;
 	struct sockaddr_in adresse_places;
@@ -28,7 +56,7 @@ int main(int argc, char **argv)
 	if ((socket_PLACES = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		perror("creation socket locale");
-		exit(1);
+		exit(3);
 	}
 
 	adresse_places.sin_family = AF_INET;
@@ -41,7 +69,7 @@ int main(int argc, char **argv)
 	if (connect(socket_places, (struct sockaddr *) &adresse_places, sizeof(adresse_places))==-1)
 	{
 		perror("Connexion avec le socket places");
-		exit(2);
+		exit(4);
 	}
 
 	return EXIT_SUCCESS;

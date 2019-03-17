@@ -46,7 +46,7 @@ int main (){
    
    if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
-	  	perror("creation socket");
+	  	perror("creation socket places");
 	  	exit(1);
 	}
 	
@@ -58,7 +58,7 @@ int main (){
 	
 	if ((bind(socket_places, (struct sockaddr *) &adresse_places, lgadresse_places)) == -1)
 	{
-	  	perror("bind");
+	  	perror("bind places");
 	  	exit(2);
 	}
 
