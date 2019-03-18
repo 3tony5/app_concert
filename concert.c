@@ -58,15 +58,13 @@
 
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	// mise en place de la socket concert
 	int socket_concert;
 	struct sockaddr_in adresse_concert;
 	int lgadresse_concert;
    
-	if ((socket_CONCERT = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-	{
+	if ((socket_CONCERT = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("creation socket concert");
 		exit(1);
 	}
@@ -77,8 +75,7 @@ int main(int argc, char **argv)
 
 	lgadresse_concert = sizeof(adresse_concert);
 
-	if ((bind(socket_concert, (struct sockaddr *) &adresse_concert, lgadresse_concert)) == -1)
-	{
+	if ((bind(socket_concert, (struct sockaddr *) &adresse_concert, lgadresse_concert)) == -1) {
 		perror("bind concert");
 	  	exit(2);
 	}
@@ -94,8 +91,7 @@ int main(int argc, char **argv)
 	struct hostent *hote;
 
 	printf("creation de la socket locale");
-	if ((socket_PLACES = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-	{
+	if ((socket_PLACES = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("creation socket locale");
 		exit(3);
 	}
@@ -107,8 +103,7 @@ int main(int argc, char **argv)
 	printf("L'adresse en notation pointee est : %s\n", inet_ntoa(adresse_places.sin_addr));
 	fflush(stdout);
 
-	if (connect(socket_places, (struct sockaddr *) &adresse_places, sizeof(adresse_places))==-1)
-	{
+	if (connect(socket_places, (struct sockaddr *) &adresse_places, sizeof(adresse_places)) == -1) {
 		perror("Connexion avec le socket places");
 		exit(4);
 	}
