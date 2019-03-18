@@ -1,33 +1,39 @@
 //J'ai changé le types places afin de pouvoir l'utilisé également pour les commandes. A VOIR ! 
 #define _GNU_SOURCE
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h> 
+#include <netinet/ip.h> 
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-//ci-dessous l'application places qui va contabilisé le nombres de places disponibles pour l'application concert.
 #include "gestionnaire_concert.h"
-places compteplaces(places place) {
+
+places salle[3];
+
+//ci-dessous l'application places qui va contabilisé le nombres de places disponibles pour l'application concert.
+places compte_places(places place) {
     int i;
     places result;
     result.categorie = place.categorie;
-    result.nbPlaces=0;
-    for ( i = 0; i < place.nbPlaces; i--)
-    {
-        salle[place.categorie-1]--;
+    result.nbPlaces = 0;
+    for ( i = 0; i < place.nbPlaces; i--) {
+        salle[place.categorie - 1].nbPlaces--;
         result.nbPlaces--;
-        if(salle[place.categorie-1]==0 ){
-
+        if (salle[place.categorie - 1].nbPlaces == 0) {
             return result;
         }
 
@@ -35,11 +41,9 @@ places compteplaces(places place) {
     return result;
 }
 
-places salle[3];
 
 int main () {
     // On définit un tableau contenant les informations sur les 3 catégories de places
-   
     places place;
 
     // Catégorie 1 : à proximité de la scène
@@ -81,7 +85,7 @@ int main () {
 	}
 
     // while 1
-    while (true) {
+    while (1) {
         // On attend que concert se connecte à la socket
 		int accept_concert = accept(socket_places, (struct sockaddr *) &adresse_places, &lgadresse_places);
 		if (accept_concert == -1) {
@@ -95,19 +99,19 @@ int main () {
 
     
         //lecture debut transaction
-        if(read(sock, &place, sizeof(places)) < 0) {
+        if (read(socket_places, &place, sizeof(places)) < 0) {
             perror("read places");
             exit(4);
 
         }
 
         // si transactions>0
-        if (place.nbPlaces>0) {
+        if (place.nbPlaces > 0) {
             // places->categories =+ transactions
-            salle[place.categories-1] = salle[place.categories-1] + place.nbPlaces;
+            salle[place.categorie-1].nbPlaces = salle[place.categorie-1].nbPlaces + place.nbPlaces;
 
             //envoie transactions à concert
-            if (write(sock, place, sizeof(places)) != sizeof(places)) {
+            if (write(socket_places, &place, sizeof(places)) != sizeof(places)) {
                 perror("write places");
                 exit(5);
             }
@@ -116,9 +120,9 @@ int main () {
         }
         else {
             // compte le nombre de place reservable 
-            places = compteplaces(places);
+            place = compte_places(place);
             // renvoie le nombre de reservé 
-            if (write(sock, place, sizeof(places)) != sizeof(places)) {
+            if (write(socket_places, &place, sizeof(places)) != sizeof(places)) {
 
                 perror("write");
                 exit(6);
