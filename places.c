@@ -1,5 +1,19 @@
 //J'ai changé le types places afin de pouvoir l'utilisé également pour les commandes. A VOIR ! 
+#define _GNU_SOURCE
 
+#include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 //ci-dessous l'application places qui va contabilisé le nombres de places disponibles pour l'application concert.
 #include "gestionnaire_concert.h"
