@@ -6,6 +6,6 @@ typedef struct places
     int prix;
 } places;
 
-#define float REDUCTION_ETUDIANTE = 0.8;
-#define unsigned short PORT_PLACES = 4567;
-#define unsigned short PORT_CONCERT = 4568;
+#define REDUCTION_ETUDIANTE 0.8
+#define PORT_PLACES 4567
+#define PORT_CONCERT 4568
