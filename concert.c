@@ -14,45 +14,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
 #include "gestionnaire_concert.h"
-// fonctionnement du thread
-// le thread possede en parametre le numero de la sock du client achat.c
-//entete
-// initialise/paretre connexion
 
-//while transaction non fini
-
-// lit données achat
-
-// envoie des données à places (nb places - nb déja réservé)
-
-//lit la réponse de places
-
-//envoie la réponse de places à achat;
-
-//si nb places demandé == nbplaces reservé
-
-//envoie prix 
-
-//attend code carte bleu
-
-//envoie ok
-// reset nb places reservé à 0
-
-//fin transaction
-
-//fin si
-
-//si nb places réservé ==0
-
-// fin transaction
-
-// fin si sinon
-
-// fin while
-
-// rend le nombre de reservé a places.c
 
 
 
@@ -61,7 +29,7 @@
 int main(int argc, char **argv) {
 
 	int pere=0;
-	fini=0;
+	int fini=0;
 	int socket_PLACES;
 	struct sockaddr_in adresse_places;
 	struct hostent *hote;
@@ -82,7 +50,7 @@ strcpy(textvalidation,"ok");
 	printf("L'adresse en notation pointee est : %s\n", inet_ntoa(adresse_places.sin_addr));
 	fflush(stdout);
 
-	if (connect(socket_places, (struct sockaddr *) &adresse_places, sizeof(adresse_places)) == -1) {
+	if (connect(socket_PLACES, (struct sockaddr *) &adresse_places, sizeof(adresse_places)) == -1) {
 		perror("Connexion avec le socket places");
 		exit(4);
 	}
@@ -90,32 +58,56 @@ strcpy(textvalidation,"ok");
 	int socket_concert;
 	struct sockaddr_in adresse_concert;
 	int lgadresse_concert;
-   	
-	while( pere==0){
-
-	if ((socket_CONCERT = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror("creation socket concert");
+	int socket_RV;
+   	struct sockaddr_in adresseRV;
+	int lgadresseRV;
+	struct hostent * hote_concert;
+	unsigned short port;
+	/*création de la socket RV*/
+	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) ==-1)
+		{
+		perror("socket");
 		exit(1);
+		}
+/*preparation de l'adresse locale */
+port = (unsigned short) atoi(argv[1]);
+
+adresseRV.sin_family = AF_INET;
+adresseRV.sin_port = htons(port);
+adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
+lgadresseRV = sizeof(adresseRV);
+/* attachement de la socket a l'adresse locale */
+
+if ((bind(socket_RV,(struct sockaddr * ) &adresseRV,lgadresseRV))==-1)
+	{
+  	perror("bind");
+  	exit(3);
+	}
+/* declaration d'ouverture du service */
+if (listen(socket_RV, 10)==-1)
+	{
+  	perror("listen");
+  	exit(4);
 	}
 
-	adresse_concert.sin_family = AF_INET;
-	adresse_concert.sin_port = htons(PORT_CONCERT);
-	adresse_concert.sin_addr.s_addr = htonl(INADDR_ANY);
 
+
+
+	/* boucle d'attente de connexion*/
+	while( pere==0){
+	
+	/* attente d'un client */
 	lgadresse_concert = sizeof(adresse_concert);
-
-	if ((bind(socket_concert, (struct sockaddr *) &adresse_concert, lgadresse_concert)) == -1) {
-		perror("bind concert");
-	  	exit(2);
+	socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert,&lgadresse_concert);
+	if (socket_concert==-1)
+	{  /* erreur */
+  	perror("accept");
+  	exit(5);
 	}
-
-
-
-
-
-
-	// -------------------------------------------------
-	// mise en place de la socket pour connexion à places
+	/* un client est arrive : il est connecte via la socket de service */
+	printf("connexion acceptee\n");
+	fflush(stdout);
+	
     
 
 	
@@ -123,7 +115,7 @@ strcpy(textvalidation,"ok");
 	if (fork()!=0){
 		pere=1;
 	} 
-
+	}
 //while transaction non fini
 while(fini ==0){
 // lit données achat
@@ -135,7 +127,7 @@ while(fini ==0){
         }
 // envoie des données à places (nb places - nb déja réservé)
 areserve.nbPlaces=places.nbPlaces - reserve.nbPlaces;// est negatif si reservation de places, positif si liberation de places
- if (write(socket_PLACES,areserve,sizeof (int))!=sizeof(places)){
+ if (write(socket_PLACES,&areserve,sizeof (int))!=sizeof(places)){
 
         perror("write");
         exit(3);
@@ -151,7 +143,7 @@ areserve.nbPlaces=places.nbPlaces - reserve.nbPlaces;// est negatif si reservati
 //envoie la réponse de places à achat;
 reserve.nbPlaces=reserve.nbPlaces+ places_res.nbPlaces;
 //si nb places demandé == nbplaces reservé
-if(nb_places == nb_reserve){
+if(places.nbPlaces == reserve.nbPlaces){
 //envoie prix 
 
 //attend code carte bleu
@@ -162,7 +154,7 @@ if(nb_places == nb_reserve){
 
         }
 //envoie ok
- if (write(socket_concert,textevalidation,sizeof (int))!=sizeof(places)){
+ if (write(socket_concert,textvalidation,sizeof (int))!=sizeof(places)){
 
         perror("write");
         exit(3);
@@ -173,7 +165,7 @@ fini=1;
 //fin si
 }
 //si nb places réservé ==0
-if (resereve.nbPlaces == 0){
+if (reserve.nbPlaces == 0){
 
 
 // fin transaction
@@ -184,14 +176,14 @@ fini=1;
 }
 // rend le nombre de reservé a places.c
 reserve.nbPlaces= 0- reserve.nbPlaces;
- if (write(socket_PLACES,reserve,sizeof (int))!=sizeof(places)){
+ if (write(socket_PLACES,&reserve.nbPlaces,sizeof (int))!=sizeof(places)){
 
         perror("write");
         exit(3);
     }
 
 
-	}
+	
 	
 	return EXIT_SUCCESS;
 }
