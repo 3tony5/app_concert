@@ -9,7 +9,6 @@
 #include <netinet/ip.h> 
 #include <pthread.h>
 #include <sched.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
