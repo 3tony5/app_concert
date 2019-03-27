@@ -2,6 +2,7 @@ typedef struct places
 {
     int categorie;
     int nbPlaces;
+    int nbEtudiants;
     int dispo;
     int prix;
 } places;

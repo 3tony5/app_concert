@@ -24,13 +24,27 @@
 
 places salle[3];
 
-places compte_places(places place) {
+void afficher_places(places salle[3])
+{
+    int cat;
+    printf("-------------------------------------------------------\n");
+    printf("Affichage du nombre de places restantes dans la salle :\n");
+    for (cat = 0; cat <= 2; cat++)
+    {
+        printf("Catégorie %i -> %i places disponibles\n", cat+1, salle[cat].nbPlaces);
+    }
+    printf("-------------------------------------------------------\n\n");
+    fflush(stdout);
+}
+
+places compte_places(places place)
+{
     int i;
     places result;
     result.categorie = place.categorie;
     result.nbPlaces = 0;
 
-    for ( i = 0; i > place.nbPlaces; i--) {
+    for (i = 0; i > place.nbPlaces; i--) {
         salle[place.categorie - 1].nbPlaces--;
         result.nbPlaces--;
         if (salle[place.categorie - 1].nbPlaces == 0) {
@@ -94,6 +108,8 @@ int main()
 		exit(3);
 	}
 
+    afficher_places(salle);
+
     // while 1
     while (1) {
         // On attend que concert se connecte à la socket
@@ -110,54 +126,54 @@ int main()
             fflush(stdout);
         }
 
-        while (1)
+        /* Attend information transactions */
+    
+        // lecture debut transaction
+        if (read(socket_concert, &place, sizeof(places)) < 0)
         {
-            //attend information transactions
-            // TODO ??
-        
-            //lecture debut transaction
-            if (read(socket_concert, &place, sizeof(places)) < 0)
-            {
-                perror("read concert demande places");
-                exit(5);
+            perror("read concert demande places");
+            exit(5);
 
-            }
-	        printf("Categorie demandée %i, Nombre de places demandées %i\n", place.categorie, place.nbPlaces);
-
-            // si transactions>0
-            if (place.nbPlaces > 0)
-            {
-                // places->categories =+ transactions
-                salle[place.categorie-1].nbPlaces = salle[place.categorie-1].nbPlaces + place.nbPlaces;
-
-                //envoie transactions à concert
-                if (write(socket_concert, &place, sizeof(places)) != sizeof(places))
-                {
-                    perror("write concert transaction");
-                    exit(6);
-                }
-		        printf("Retour de transaction envoyé\n");
-                
-            //sinon pour i de 0 à transaction
-            }
-            else
-            {
-                // compte le nombre de place reservable 
-                place = compte_places(place);
-                // renvoie le nombre de reservé 
-                if (write(socket_concert, &place, sizeof(places)) != sizeof(places))
-                {
-                    perror("write concert reservation");
-                    exit(7);
-                }
-		    printf("Retour de transaction envoyé catégorie : %i places : %i \n", place.categorie, place.nbPlaces);
-            //fin si
-            }
-        //fin while
         }
+        printf("Categorie demandée %i, Nombre de places demandées %i\n", place.categorie, place.nbPlaces);
+
+        // si transactions>0
+        if (place.nbPlaces > 0)
+        {
+            // places->categories =+ transactions
+            salle[place.categorie-1].nbPlaces = salle[place.categorie-1].nbPlaces + place.nbPlaces;
+
+            //envoie transactions à concert
+            if (write(socket_concert, &place, sizeof(places)) != sizeof(places))
+            {
+                perror("write concert transaction");
+                exit(6);
+            }
+            printf("Retour de transaction envoyé\n");
+            
+        //sinon pour i de 0 à transaction
+        }
+        else
+        {
+            // compte le nombre de place reservable 
+            place = compte_places(place);
+            // renvoie le nombre de reservé 
+            if (write(socket_concert, &place, sizeof(places)) != sizeof(places))
+            {
+                perror("write concert reservation");
+                exit(7);
+            }
+        printf("Retour de transaction envoyé catégorie : %i places : %i \n", place.categorie, place.nbPlaces);
+        //fin si
+        }
+
+        //Affichage du nombre de places
+        afficher_places(salle);
+        close(socket_concert);
+
     
     //fin while connexion
     }
-
+    close(socket_RV);
     return EXIT_SUCCESS;
 }

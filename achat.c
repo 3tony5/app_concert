@@ -76,11 +76,26 @@ int main(int argc, char **argv)
     while (transFini == 0) {
 
         //demander un certain nombre de places pour une certaine catégorie
-        printf("Catégorie désiréé 1, 2 ou 3 ?");
-        scanf("%i", &(achat.categorie));
-        printf("Nombre de places désirées ?");
-        scanf("%i", &achat.nbPlaces);
+        do
+        {
+            printf("Nombre de places désirées ?\n");
+            scanf("%i", &achat.nbPlaces);
+        }
+        while (achat.nbPlaces < 0);
+        do
+        {
+            printf("Catégorie désirée 1, 2 ou 3 ?\n");
+            scanf("%i", &(achat.categorie));
+        }
+        while (achat.categorie != 1 && achat.categorie != 2 && achat.categorie != 3);
+        do
+        {
+            printf("Nombre de places étudiante ?\n");
+            scanf("%i", &achat.nbEtudiants);
+        }
+        while ((achat.nbEtudiants < 0) || (achat.nbEtudiants > achat.nbPlaces));
 	    achat.nbPlaces = -achat.nbPlaces;
+        achat .nbEtudiants = -achat.nbEtudiants;
 
         // envoyer ces données a concert
         if (write(sock, &achat, sizeof(places)) != sizeof(places))
@@ -104,8 +119,8 @@ int main(int argc, char **argv)
             }
 
             //demandé et envoyer code carte bleu
-            printf ("Cela vous fera %i \n", prix);
-            printf("Veuillez entrer votre code de carte bancaire\n");
+            printf ("Cela vous coutera %i €\n", prix);
+            printf("Veuillez entrer votre code de carte bancaire pour procéder au paiement\n");
             scanf("%i", &codeBancaire);
             if (write(sock, &codeBancaire, sizeof(places)) != sizeof(places))
             {

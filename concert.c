@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
 	if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
-		perror("creation socket places");
+		perror("socket places");
 		exit(1);
 	}
 	printf("Création de la socket places\n");
@@ -117,7 +117,12 @@ int main(int argc, char **argv)
 		/* attente d'un client */
 		lgadresse_concert = sizeof(adresse_concert);
 		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
-		if (socket_concert == -1)
+		if (socket_concert == -1  && errno == EINTR)
+		{
+			/* Reception d'un signal */
+			continue;
+		}
+		if(socket_concert == -1)
 		{  /* erreur */
 			perror("accept concert");
 			exit(7);
@@ -145,8 +150,8 @@ int main(int argc, char **argv)
 				}
 					
 				// envoie des données à places (nb places - nb déja réservé)
-				areserve.nbPlaces=places.nbPlaces - reserve.nbPlaces;// est negatif si reservation de places, positif si liberation de places
-				areserve.categorie=places.categorie;
+				areserve.nbPlaces = places.nbPlaces - reserve.nbPlaces;// est negatif si reservation de places, positif si liberation de places
+				areserve.categorie = places.categorie;
 				if (write(socket_places, &areserve, sizeof(places)) != sizeof(places))
 				{
 					perror("write places place");
@@ -161,7 +166,8 @@ int main(int argc, char **argv)
 				}
 			
 					
-				printf("  lecture de la réponse: Catégorie demandée %i, Nb places demandé %i\n", places_res.categorie, places_res.nbPlaces);
+				printf(">>Lecture de la réponse:\n\tCatégorie demandée %i\n\tNombre de places demandées %i\n\tDont %i étudiants\n", places_res.categorie, places_res.nbPlaces, places.nbEtudiants);
+				fflush(stdout);
 				// envoie la réponse de places à achat;
 				reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
 				if (write(socket_concert, &reserve, sizeof(places)) != sizeof(places))
@@ -173,7 +179,7 @@ int main(int argc, char **argv)
 				// si nb places demandé == nbplaces reservé
 				if (places.nbPlaces == reserve.nbPlaces) {
 					// envoie prix sur la socket concert
-					prix = places.nbPlaces * tarif[places.categorie - 1];
+					prix = (tarif[places.categorie - 1] * -(places.nbPlaces - places.nbEtudiants)) + (tarif[places.categorie - 1] * -places.nbEtudiants * REDUCTION_ETUDIANTE);
 					if (write(socket_concert, &prix, sizeof(int)) != sizeof(int))
 					{
 						perror("write concert prix");
@@ -193,6 +199,7 @@ int main(int argc, char **argv)
 						perror("write concert validation");
 						exit(15);
 					}
+					printf("Réservation acceptée et payé pour %i\n", places.nbPlaces);
 
 					//fin transaction
 					fini = 1;
