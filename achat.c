@@ -74,7 +74,8 @@ int main(int argc, char **argv) {
         scanf("%i", &(achat.categorie));
         printf("nombre de places désirés ?");
         scanf("%i", &achat.nbPlaces);
-	achat.nbPlaces=0-achat.nbPlaces;
+	    achat.nbPlaces = 0 - achat.nbPlaces;
+
         // envoyer ces données a concert
         if (write(sock, &achat, sizeof(places)) != sizeof(places)) {
             perror("write achat");
@@ -108,12 +109,12 @@ int main(int argc, char **argv) {
                 perror("read achat");
                 exit(8);
             }
-		if (strcmp (validation,"ok")==0){
-		printf("achat réussi\n");
-		}
+            if (strcmp (validation,"ok") == 0){
+                printf("achat réussi\n");
+            }
             // fin de la transaction
             transFini = 1;
-            // Fin si sinon si nbautorisé =0 fin de la transaction
+        // Fin si sinon si nbautorisé =0 fin de la transaction
         }
         else {
             if (vente.nbPlaces == 0) {
