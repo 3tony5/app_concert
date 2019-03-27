@@ -5,10 +5,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <netinet/in.h> 
-#include <netinet/ip.h> 
-#include <pthread.h>
+#include <netinet/in.h>
 #include <sched.h>
+#include <signal.h>
+#include <string.h>
+#include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -41,7 +42,7 @@ places compte_places(places place) {
 }
 
 
-int main () {
+int main (int argc, char **argv) {
     // On définit un tableau contenant les informations sur les 3 catégories de places
     places place;
 
@@ -60,77 +61,98 @@ int main () {
     salle[2].nbPlaces = 100;
 
 
-    // connexion à concert
-    int socket_places;
-    struct sockaddr_in adresse_places;
-    int lgadresse_places;
-   
-    if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        perror("creation socket places");
-        exit(1);
-    }
-	
-	adresse_places.sin_family = AF_INET;
-	adresse_places.sin_port = htons(PORT_PLACES);
-	adresse_places.sin_addr.s_addr = htonl(INADDR_ANY);
-	
-	lgadresse_places = sizeof(adresse_places);
-	
-	if ((bind(socket_places, (struct sockaddr *) &adresse_places, lgadresse_places)) == -1)
+    int socket_concert;
+	struct sockaddr_in adresse_concert;
+	int lgadresse_concert;
+	int socket_RV;
+   	struct sockaddr_in adresseRV;
+	int lgadresseRV;
+	struct hostent * hote_concert;
+	unsigned short port;
+
+	/*création de la socket RV*/
+	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) == -1)
 	{
-	  	perror("bind places");
-	  	exit(2);
+		perror("socket RV");
+		exit(1);
 	}
+
+	/*preparation de l'adresse locale */
+	port = (unsigned short) atoi(argv[1]);
+	adresseRV.sin_family = AF_INET;
+	adresseRV.sin_port = htons(port);
+	adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
+	lgadresseRV = sizeof(adresseRV);
+
+	/* attachement de la socket a l'adresse locale */
+	if ((bind(socket_RV, (struct sockaddr *)&adresseRV, lgadresseRV)) == -1)
+	{
+		perror("bind RV");
+		exit(1);
+	}
+
+	/* declaration d'ouverture du service */
+	if (listen(socket_RV, 10) == -1)
+	{
+		perror("listen RV");
+		exit(2);
+	}
+
+	lgadresse_concert = sizeof(adresse_concert);
 
     // while 1
     while (1) {
         // On attend que concert se connecte à la socket
-		int accept_concert = accept(socket_places, (struct sockaddr *) &adresse_places, &lgadresse_places);
-		if (accept_concert == -1) {
+		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
+		if (socket_concert == -1) {
 			perror("places accept");
 			exit(3);
 		}
         else {
-		    printf("Application places connecté avec succès à concert !!\n");
-        }
-        //attend information transactions
-
-    
-        //lecture debut transaction
-        if (read(socket_places, &place, sizeof(places)) < 0) {
-            perror("read places");
-            exit(4);
-
+		    printf("Application concert connecté avec succès à places !!\n");
+            fflush(stdout);
         }
 
-        // si transactions>0
-        if (place.nbPlaces > 0) {
-            // places->categories =+ transactions
-            salle[place.categorie-1].nbPlaces = salle[place.categorie-1].nbPlaces + place.nbPlaces;
+        while (1) {
+            //attend information transactions
 
-            //envoie transactions à concert
-            if (write(socket_places, &place, sizeof(places)) != sizeof(places)) {
-                perror("write places");
-                exit(5);
-            }
-            
-        //sinon pour i de 0 à transaction
-        }
-        else {
-            // compte le nombre de place reservable 
-            place = compte_places(place);
-            // renvoie le nombre de reservé 
-            if (write(socket_places, &place, sizeof(places)) != sizeof(places)) {
+        
+            //lecture debut transaction
+            if (read(socket_concert, &place, sizeof(places)) < 0) {
+                perror("read places");
+                exit(4);
 
-                perror("write");
-                exit(6);
             }
 
-        //fin si
+            // si transactions>0
+            if (place.nbPlaces > 0) {
+                // places->categories =+ transactions
+                salle[place.categorie-1].nbPlaces = salle[place.categorie-1].nbPlaces + place.nbPlaces;
+
+                //envoie transactions à concert
+                if (write(socket_concert, &place, sizeof(places)) != sizeof(places)) {
+                    perror("write places");
+                    exit(5);
+                }
+                
+            //sinon pour i de 0 à transaction
+            }
+            else {
+                // compte le nombre de place reservable 
+                place = compte_places(place);
+                // renvoie le nombre de reservé 
+                if (write(socket_concert, &place, sizeof(places)) != sizeof(places)) {
+
+                    perror("write");
+                    exit(6);
+                }
+
+            //fin si
+            }
+        //fin while
         }
     
-    //fin while
+    //fin while connexion
     }
 
     return EXIT_SUCCESS;
