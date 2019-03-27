@@ -1,29 +1,27 @@
 // ci dessous l'application concert qui va faire le serveur du projet.
 #define _GNU_SOURCE
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
+#include <string.h>
+#include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string.h>
+
 #include "gestionnaire_concert.h"
-
-
-
-
 
 
 int main(int argc, char **argv) {
@@ -40,28 +38,31 @@ int main(int argc, char **argv) {
 	strcpy(textvalidation, "ok");
 
 	// mise en place de la socket places
-	// TODO
 	int socket_places;
 	struct sockaddr_in adresse_places;
 	struct hostent *hote;
  	
-
-	printf("creation de la socket locale");
+	printf("creation de la socket places");
 	if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror("creation socket locale");
+		perror("creation socket places");
 		exit(1);
 	}
 
+	/* recuperation de l'adresse IP du serveur (a partir de son nom) */
+    if ((hote = gethostbyname(argv[2])) == NULL) {
+        perror("gethostbyname");
+        exit(2);
+    }
+
 	adresse_places.sin_family = AF_INET;
-	adresse_places.sin_port = htons(PORT_PLACES);
-	//recufilsr l'hote
-	//bcopy(hote->h_addr, &adresse_places.sin_addr, hote->h_length);
+	adresse_places.sin_port = htons((unsigned int)PORT_PLACES);
+	bcopy(hote->h_addr, &adresse_places.sin_addr, hote->h_length);
 	printf("L'adresse en notation pointee est : %s\n", inet_ntoa(adresse_places.sin_addr));
 	fflush(stdout);
 
-	if (connect(socket_places, (struct sockaddr *) &adresse_places, sizeof(adresse_places)) == -1) {
+	if (connect(socket_places, (struct sockaddr *)&adresse_places, sizeof(adresse_places)) == -1) {
 		perror("Connexion avec le socket places");
-		exit(2);
+		exit(3);
 	}
 
 	// mise en place de la socket concert
@@ -75,29 +76,28 @@ int main(int argc, char **argv) {
 	unsigned short port;
 
 	/*création de la socket RV*/
-	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) ==-1)
+	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) == -1)
 	{
-		perror("socket");
-		exit(3);
+		perror("socket RV");
+		exit(4);
 	}
 
 	/*preparation de l'adresse locale */
-	port = (unsigned short) atoi(argv[1]);
 	adresseRV.sin_family = AF_INET;
-	adresseRV.sin_port = htons(port);
+	adresseRV.sin_port = htons((unsigned int)PORT_CONCERT);
 	adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
 	lgadresseRV = sizeof(adresseRV);
 
 	/* attachement de la socket a l'adresse locale */
 	if ((bind(socket_RV, (struct sockaddr *)&adresseRV, lgadresseRV)) == -1)
 	{
-		perror("bind");
+		perror("bind RV");
 		exit(4);
 	}
 	/* declaration d'ouverture du service */
 	if (listen(socket_RV, 10) == -1)
 	{
-		perror("listen");
+		perror("listen RV");
 		exit(5);
 	}
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
 		/* attente d'un client */
 		lgadresse_concert = sizeof(adresse_concert);
 		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
-		if (socket_concert==-1)
+		if (socket_concert == -1)
 		{  /* erreur */
 			perror("accept");
 			exit(6);
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
 			}
 
 			//envoie ok
-			if (write(socket_concert, textvalidation, strlen(textvaliation)+1) != strlen(textvaliation)+1) {
+			if (write(socket_concert, textvalidation, strlen(textvalidation)+1) != strlen(textvalidation)+1) {
 				perror("write concert validation");
 				exit(12);
 			}

@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
     int sock;
     struct sockaddr_in adresse_concert;
     struct hostent *hote;
-    unsigned short port;
 
     // etablir la connexion avec concert
 
@@ -40,17 +39,15 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    // FIX
     /* recuperation de l'adresse IP du serveur (a partir de son nom) */
     if ((hote = gethostbyname(argv[2])) == NULL) {
         perror("gethostbyname");
         exit(2);
     }
     /* preparation de l'adresse du serveur */
-    port = (unsigned short) atoi(argv[1]);
 
     adresse_concert.sin_family = AF_INET;
-    adresse_concert.sin_port = htons(port);
+    adresse_concert.sin_port = htons((unsigned int)PORT_CONCERT);
     bcopy(hote->h_addr, &adresse_concert.sin_addr, hote->h_length);
 
     printf("L'adresse en notation pointee %s\n", inet_ntoa(adresse_concert.sin_addr));

@@ -80,7 +80,7 @@ int main (int argc, char **argv) {
 	/*preparation de l'adresse locale */
 	port = (unsigned short) atoi(argv[1]);
 	adresseRV.sin_family = AF_INET;
-	adresseRV.sin_port = htons(port);
+	adresseRV.sin_port = htons((unsigned int)PORT_PLACES);
 	adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
 	lgadresseRV = sizeof(adresseRV);
 
