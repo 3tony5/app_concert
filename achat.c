@@ -22,7 +22,8 @@
 
 #include "gestionnaire_concert.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     int transFini = 0;
     int codeBancaire, prix;
     places achat, vente;
@@ -34,105 +35,111 @@ int main(int argc, char **argv) {
     // On verifie que l'utilisateur saisi l'hote du serveur concert
     if (argc != 2)
 	{
-		fprintf(stderr,"usage: %s concert_hostname\n", argv[0]);
+		fprintf(stderr, "usage: %s concert_hostname\n", argv[0]);
 		return(EXIT_FAILURE);
 	}
 
-    // etablir la connexion avec concert
+    /* Etablir la connexion avec concert */
 
-    /* creation de la socket locale */
+    // creation de la socket locale
     if ((sock = socket(AF_INET, SOCK_STREAM,0)) == -1) {
         perror("socket");
         exit(1);
     }
 
-    /* recuperation de l'adresse IP du serveur (a partir de son nom) */
-    if ((hote = gethostbyname(argv[1])) == NULL) {
+    // recuperation de l'adresse IP du serveur (a partir de son nom)
+    if ((hote = gethostbyname(argv[1])) == NULL)
+    {
         perror("gethostbyname");
         exit(2);
     }
-    /* preparation de l'adresse du serveur */
 
+    // preparation de l'adresse du serveur
     adresse_concert.sin_family = AF_INET;
     adresse_concert.sin_port = htons((unsigned int)PORT_CONCERT);
     bcopy(hote->h_addr, &adresse_concert.sin_addr, hote->h_length);
 
-    printf("L'adresse en notation pointee %s\n", inet_ntoa(adresse_concert.sin_addr));
-    fflush(stdout);
-
-    /* demande de connexion au serveur */
-    if (connect(sock, (struct sockaddr *) &adresse_concert, sizeof(adresse_concert)) == -1 ) {
-        perror("connect");
+    // demande de connexion au serveur
+    if (connect(sock, (struct sockaddr *)&adresse_concert, sizeof(adresse_concert)) == -1 )
+    {
+        perror("connect concert");
         exit(3);
     }
-
-    /* le serveur a accepte la connexion */
-    printf("connexion acceptee\n");
+    // le serveur a accepte la connexion
+    printf("Connexion acceptée !!\n");
     fflush(stdout);
 
 
-    //debut du traitement des données
+    /* Debut du traitement des données */
 
     //tant que transaction non terminés.
     while (transFini == 0) {
 
-        //demander un certain nombre de places pour une certaines categories
-        printf("categories désirés 1, 2 ou 3 ?");
+        //demander un certain nombre de places pour une certaine catégorie
+        printf("Catégorie désiréé 1, 2 ou 3 ?");
         scanf("%i", &(achat.categorie));
-        printf("nombre de places désirés ?");
+        printf("Nombre de places désirées ?");
         scanf("%i", &achat.nbPlaces);
-	    achat.nbPlaces = 0 - achat.nbPlaces;
+	    achat.nbPlaces = -achat.nbPlaces;
 
         // envoyer ces données a concert
-        if (write(sock, &achat, sizeof(places)) != sizeof(places)) {
-            perror("write achat");
+        if (write(sock, &achat, sizeof(places)) != sizeof(places))
+        {
+            perror("write concert places");
             exit(4);
         }
 
         // récupere le nombres de places autorisée
-        if (read(sock, &vente, sizeof(places)) < 0) {
-            perror("read achat");
+        if (read(sock, &vente, sizeof(places)) < 0)
+        {
+            perror("read concert places");
             exit(5);
         }
         //si nbautorisé = nbdemandé
         if (vente.nbPlaces == achat.nbPlaces){
 
             if (read(sock, &prix, sizeof(int)) < 0) {
-                perror("read");
+                perror("read concert prix");
                 exit(6);
             }
 
             //demandé et envoyer code carte bleu
-            printf ("cela vous fera %i \n", prix);
-            printf("Veuillez entrez votre code de carte bleu\n");
+            printf ("Cela vous fera %i \n", prix);
+            printf("Veuillez entrer votre code de carte bancaire\n");
             scanf("%i", &codeBancaire);
-            if (write(sock, &codeBancaire, sizeof(places)) != sizeof(places)) {
-                perror("write achat cb");
+            if (write(sock, &codeBancaire, sizeof(places)) != sizeof(places))
+            {
+                perror("write concert cb");
                 exit(7);
             }
 
             // attendre ok de concert
-            if (read(sock, &validation, sizeof(char)*201) < 0) {
-                perror("read achat");
+            if (read(sock, &validation, sizeof(char)*201) < 0)
+            {
+                perror("read concert validation");
                 exit(8);
             }
             if (strcmp (validation,"ok") == 0){
-                printf("achat réussi\n");
+                printf("Achat réussi avec succès !!\n");
             }
             // fin de la transaction
             transFini = 1;
-        // Fin si sinon si nbautorisé =0 fin de la transaction
+        // Fin si sinon si nbautorisé = 0 fin de la transaction
         }
-        else {
-            if (vente.nbPlaces == 0) {
-                printf("plus de places dans la categories demandé. \n");
+        else
+        {
+            if (vente.nbPlaces == 0)
+            {
+                printf("Nombre de places dans la categories demandée insuffisant. \n");
                 transFini = 1;
             }
-            // sinon présenté offres 
-            else {
-                printf("il reste %i places dans cette categories. en voulez-vous?", -vente.nbPlaces);
+            // sinon présentation des autres offres 
+            else
+            {
+                printf("Il reste %i places dans cette categorie. En voulez-vous? (oui, non)", -vente.nbPlaces);
                 scanf ("%s", reponse);
-                if (strcmp(reponse, "non") == 0) {
+                if (strcmp(reponse, "non") == 0)
+                {
                     transFini = 1; 
                 }
             }
