@@ -30,7 +30,9 @@ places compte_places(places place) {
     places result;
     result.categorie = place.categorie;
     result.nbPlaces = 0;
-    for ( i = 0; i < place.nbPlaces; i--) {
+
+    for ( i = 0; i > place.nbPlaces; i--) {
+
         salle[place.categorie - 1].nbPlaces--;
         result.nbPlaces--;
         if (salle[place.categorie - 1].nbPlaces == 0) {
@@ -78,7 +80,7 @@ int main (int argc, char **argv) {
 	}
 
 	/*preparation de l'adresse locale */
-	port = (unsigned short) atoi(argv[1]);
+	
 	adresseRV.sin_family = AF_INET;
 	adresseRV.sin_port = htons((unsigned int)PORT_PLACES);
 	adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -123,7 +125,7 @@ int main (int argc, char **argv) {
                 exit(4);
 
             }
-
+	printf("categories demandé %i, nb places demandé %i\n",place.categorie,place.nbPlaces);
             // si transactions>0
             if (place.nbPlaces > 0) {
                 // places->categories =+ transactions
@@ -134,6 +136,7 @@ int main (int argc, char **argv) {
                     perror("write places");
                     exit(5);
                 }
+		printf("retour de transaction envoyé\n");
                 
             //sinon pour i de 0 à transaction
             }
@@ -146,7 +149,7 @@ int main (int argc, char **argv) {
                     perror("write");
                     exit(6);
                 }
-
+		printf("retour de transaction envoyé categories : %i places : %i \n",place.categorie,place.nbPlaces );
             //fin si
             }
         //fin while

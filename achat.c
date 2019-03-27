@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     }
 
     /* recuperation de l'adresse IP du serveur (a partir de son nom) */
-    if ((hote = gethostbyname(argv[2])) == NULL) {
+    if ((hote = gethostbyname(argv[1])) == NULL) {
         perror("gethostbyname");
         exit(2);
     }
@@ -74,14 +74,14 @@ int main(int argc, char **argv) {
         scanf("%i", &(achat.categorie));
         printf("nombre de places désirés ?");
         scanf("%i", &achat.nbPlaces);
-
+	achat.nbPlaces=0-achat.nbPlaces;
         // envoyer ces données a concert
         if (write(sock, &achat, sizeof(places)) != sizeof(places)) {
             perror("write achat");
             exit(4);
         }
 
-        // récuperer le nombres de places autoriser
+        // récupere le nombres de places autorisée
         if (read(sock, &vente, sizeof(places)) < 0) {
             perror("read achat");
             exit(5);
@@ -108,6 +108,9 @@ int main(int argc, char **argv) {
                 perror("read achat");
                 exit(8);
             }
+		if (strcmp (validation,"ok")==0){
+		printf("achat réussi\n");
+		}
             // fin de la transaction
             transFini = 1;
             // Fin si sinon si nbautorisé =0 fin de la transaction
@@ -119,7 +122,7 @@ int main(int argc, char **argv) {
             }
             // sinon présenté offres 
             else {
-                printf("il reste %i places dans cette categories. en voulez-vous?", vente.nbPlaces);
+                printf("il reste %i places dans cette categories. en voulez-vous?", -vente.nbPlaces);
                 scanf ("%s", reponse);
                 if (strcmp(reponse, "non") == 0) {
                     transFini = 1; 
