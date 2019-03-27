@@ -43,6 +43,13 @@ int main(int argc, char **argv) {
 	struct sockaddr_in adresse_places;
 	struct hostent *hote;
  	
+	// On verifie que l'administrateur saisi l'hote du serveur places
+    if (argc != 2)
+	{
+		fprintf(stderr,"usage: %s places_hostname\n", argv[0]);
+		return(EXIT_FAILURE);
+	}
+
 	printf("creation de la socket places");
 	if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("creation socket places");
@@ -73,8 +80,6 @@ int main(int argc, char **argv) {
 	int socket_RV;
    	struct sockaddr_in adresseRV;
 	int lgadresseRV;
-	struct hostent * hote_concert;
-	unsigned short port;
 
 	/*création de la socket RV*/
 	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) == -1)

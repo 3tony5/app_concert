@@ -31,6 +31,13 @@ int main(int argc, char **argv) {
     struct sockaddr_in adresse_concert;
     struct hostent *hote;
 
+    // On verifie que l'utilisateur saisi l'hote du serveur concert
+    if (argc != 2)
+	{
+		fprintf(stderr,"usage: %s concert_hostname\n", argv[0]);
+		return(EXIT_FAILURE);
+	}
+
     // etablir la connexion avec concert
 
     /* creation de la socket locale */

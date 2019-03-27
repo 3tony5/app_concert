@@ -43,7 +43,7 @@ places compte_places(places place) {
 }
 
 
-int main (int argc, char **argv) {
+int main () {
     // On définit un tableau contenant les informations sur les 3 catégories de places
     places place;
 
@@ -68,8 +68,6 @@ int main (int argc, char **argv) {
 	int socket_RV;
    	struct sockaddr_in adresseRV;
 	int lgadresseRV;
-	struct hostent * hote_concert;
-	unsigned short port;
 
 	/*création de la socket RV*/
 	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) == -1)
@@ -98,11 +96,11 @@ int main (int argc, char **argv) {
 		exit(2);
 	}
 
-	lgadresse_concert = sizeof(adresse_concert);
 
     // while 1
     while (1) {
         // On attend que concert se connecte à la socket
+	    lgadresse_concert = sizeof(adresse_concert);
 		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
 		if (socket_concert == -1) {
 			perror("places accept");
