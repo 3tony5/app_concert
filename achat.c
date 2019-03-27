@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     int transFini = 0;
     int codeBancaire, prix;
     places achat, vente;
-    char  validation[200],reponse[5];
+    char  validation[200], reponse[5];
     int sock;
     struct sockaddr_in adresse_concert;
     struct hostent *hote;
@@ -96,9 +96,10 @@ int main(int argc, char **argv) {
                 perror("read");
                 exit(6);
             }
+
             //demandé et envoyer code carte bleu
-            printf ("cela vous fera %i \n",prix);
-            printf("veillez entrez votre code de carte bleu\n");
+            printf ("cela vous fera %i \n", prix);
+            printf("Veuillez entrez votre code de carte bleu\n");
             scanf("%i", &codeBancaire);
             if (write(sock, &codeBancaire, sizeof(places)) != sizeof(places)) {
                 perror("write achat cb");

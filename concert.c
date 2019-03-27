@@ -30,12 +30,21 @@ int main(int argc, char **argv) {
 
 	int fils = 0;
 	int fini = 0;
+	int tarif[3];
+	tarif[0] = 50;
+	tarif[1] = 30;
+	tarif[2] = 20;
+	int prix;
+	places places, reserve, areserve,places_res;
+	char textvalidation[200];
+	strcpy(textvalidation, "ok");
+
+	// mise en place de la socket places
+	// TODO
 	int socket_places;
 	struct sockaddr_in adresse_places;
 	struct hostent *hote;
- 	places places,reserve, areserve,places_res;
-	char textvalidation [200];
-	strcpy(textvalidation,"ok");
+ 	
 
 	printf("creation de la socket locale");
 	if ((socket_places = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -93,8 +102,6 @@ int main(int argc, char **argv) {
 	}
 
 
-
-
 	/* boucle d'attente de connexion*/
 	while (fils == 0) {
 		
@@ -110,9 +117,7 @@ int main(int argc, char **argv) {
 		printf("connexion acceptee\n");
 		fflush(stdout);
 		
-		
 
-		
 		/* la connexion à été accepté*/
 		if (fork() != 0) {
 			fils = 1;
@@ -145,18 +150,24 @@ int main(int argc, char **argv) {
 
 		//si nb places demandé == nbplaces reservé
 		if (places.nbPlaces == reserve.nbPlaces) {
-			//envoie prix 
+			//envoie prix
+			prix = places.nbPlaces * tarif[places.categorie - 1];
+			//envoie prix sur la socket concert
+			if (write(socket_concert, &prix, sizeof(int)) != sizeof(int)) {
+				perror("write concert prix");
+				exit(10);
+			}
 
 			//attend code carte bleu
 			if (read(socket_concert, &places, sizeof(places)) < 0) {
 				perror("read concert");
-				exit(10);
+				exit(11);
 			}
 
 			//envoie ok
-			if (write(socket_concert, textvalidation, sizeof(int)) != sizeof(places)) {
-				perror("write concert");
-				exit(11);
+			if (write(socket_concert, textvalidation, strlen(textvaliation)+1) != strlen(textvaliation)+1) {
+				perror("write concert validation");
+				exit(12);
 			}
 
 			//fin transaction
