@@ -1,3 +1,9 @@
+/*
+ * AUDUREAU Jules e21806010
+ * AUPIAIS Anthony e21808738
+ * CONCERT
+ */
+
 // ci dessous l'application concert qui va faire le serveur du projet.
 #define _GNU_SOURCE
 
@@ -208,7 +214,7 @@ int main(int argc, char **argv)
 						perror("write concert validation");
 						exit(15);
 					}
-					printf("Réservation acceptée et payé pour %i\n", places.nbPlaces);
+					printf("Réservation de %i places acceptée et payé pour le total de %i\n", reserve.nbPlaces, prix);
 
 					// fin transaction
 					fini = 1;

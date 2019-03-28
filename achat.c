@@ -1,3 +1,9 @@
+/*
+ * AUDUREAU Jules e21806010
+ * AUPIAIS Anthony e21808738
+ * ACHAT
+ */
+
 // ci dessous l'application achat qui va contenir les clients de l'application concert
 #define _GNU_SOURCE
 
@@ -31,7 +37,7 @@ int main(int argc, char **argv)
     int sock;
     struct sockaddr_in adresse_concert;
     struct hostent *hote;
-
+    
     // On verifie que l'utilisateur saisi l'hote du serveur concert
     if (argc != 2)
 	{
@@ -79,7 +85,7 @@ int main(int argc, char **argv)
         do
         {
             printf("Nombre de places désirées ?\n");
-            scanf("%i", &achat.nbPlaces);
+            scanf("%i", &(achat.nbPlaces));
         }
         while (achat.nbPlaces < 0);
         do

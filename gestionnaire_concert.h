@@ -1,3 +1,9 @@
+/*
+ * AUDUREAU Jules e21806010
+ * AUPIAIS Anthony e21808738
+ * Bibliotheque gestionnaire_concert.h
+ */
+
 typedef struct places
 {
     int categorie;

@@ -1,3 +1,9 @@
+/*
+ * AUDUREAU Jules e21806010
+ * AUPIAIS Anthony e21808738
+ * PLACES
+ */
+
 // ci dessous l'application places qui va gérer et maintenir à jour le nombre de places de l'application concert.
 #define _GNU_SOURCE
 
@@ -45,7 +51,7 @@ places compte_places(places place)
     result.categorie = place.categorie;
     result.nbPlaces = 0;
 
-	if (abs(place.nbPlaces) < abs(salle[place.categorie - 1].nbPlaces))
+	if (abs(place.nbPlaces) <= abs(salle[place.categorie - 1].nbPlaces))
 	{
 	    salle[place.categorie - 1].nbPlaces = salle[place.categorie - 1].nbPlaces + place.nbPlaces;
 		result.nbPlaces= place.nbPlaces;
