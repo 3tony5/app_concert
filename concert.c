@@ -143,14 +143,17 @@ int main(int argc, char **argv)
 			//while transaction non fini
 			while(fini == 0)
 			{
-				
+				printf("debut transaction\n");
 				// lit données achat
+				do{
 				if (read(socket_concert, &places, sizeof(places)) < 0)
 				{
 					perror("read concert places");
 					exit(9);
 				}
-					
+				}while(places.nbPlaces==0);
+				
+				
 				// envoie des données à places (nb places - nb déja réservé)
 				areserve.nbPlaces = places.nbPlaces - reserve.nbPlaces;// est negatif si reservation de places, positif si liberation de places
 				areserve.categorie = places.categorie;
@@ -172,7 +175,10 @@ int main(int argc, char **argv)
 				fflush(stdout);
 				
 				// envoie la réponse de places à achat;
-				reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
+				
+					reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
+				
+
 				if (write(socket_concert, &reserve, sizeof(places)) != sizeof(places))
 				{
 					perror("write concert reponse place");
@@ -208,6 +214,13 @@ int main(int argc, char **argv)
 					fini = 1;
 
 				//fin si
+				}else{
+					reserve.nbPlaces=0;
+					areserve.nbPlaces=0;
+					places.nbPlaces=0;
+					places_res.nbPlaces=0;
+					
+					printf("remise à zero\n");
 				}
 
 				//si nb places réservé == 0
@@ -227,7 +240,7 @@ int main(int argc, char **argv)
 				exit(16);
 			}
 			*/
-		close(socket_concert);		
+				
 		} else {
 			close(socket_concert);
 		}

@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <math.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sched.h>
@@ -19,7 +20,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-
 #include "gestionnaire_concert.h"
 
 places salle[3];
@@ -44,15 +44,17 @@ places compte_places(places place)
     result.categorie = place.categorie;
     result.nbPlaces = 0;
 
-    for (i = 0; i > place.nbPlaces; i--) {
-        salle[place.categorie - 1].nbPlaces--;
-        result.nbPlaces--;
-        if (salle[place.categorie - 1].nbPlaces == 0) {
-            return result;
-        }
-
-    }
+	if (abs(place.nbPlaces) < abs(salle[place.categorie - 1].nbPlaces))
+	{
+	    salle[place.categorie - 1].nbPlaces = salle[place.categorie - 1].nbPlaces + place.nbPlaces;
+		result.nbPlaces= place.nbPlaces;
+	}
+	else
+	{
+		result.nbPlaces=-salle[place.categorie - 1].nbPlaces;
+	}
     return result;
+	
 }
 
 

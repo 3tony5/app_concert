@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
     //tant que transaction non terminés.
     while (transFini == 0) {
-
+	printf("debut de transaction\n");
         //demander un certain nombre de places pour une certaine catégorie
         do
         {
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         while ((achat.nbEtudiants < 0) || (achat.nbEtudiants > achat.nbPlaces));
 	    achat.nbPlaces = -achat.nbPlaces;
         achat .nbEtudiants = -achat.nbEtudiants;
-
+		
         // envoyer ces données a concert
         if (write(sock, &achat, sizeof(places)) != sizeof(places))
         {
@@ -143,25 +143,32 @@ int main(int argc, char **argv)
         }
         else
         {
+			achat.categorie = -1;
+			achat.nbPlaces = -1;
+			achat.nbEtudiants = -1;
             if (vente.nbPlaces == 0)
             {
-                printf("Nombre de places dans la categories demandée insuffisant. \n");
+                printf("Nombre de places dans la categorie demandée insuffisant. \n");
                 transFini = 1;
             }
             // sinon présentation des autres offres 
             else
-            {
-                printf("Il reste %i places dans cette categorie. En voulez-vous? (oui, non)", -vente.nbPlaces);
-                scanf ("%s", reponse);
-                if (strcmp(reponse, "non") == 0)
-                {
-                    transFini = 1; 
-                }
+            {	
+				do
+				{
+		            printf("Il reste %i places dans cette categorie. En voulez-vous? (oui, non)", -vente.nbPlaces);
+		            scanf ("%s", reponse);
+		            if (strcmp(reponse, "non") == 0)
+		            {
+		                transFini = 1; 
+		            }
+				}
+				while ((strcmp(reponse, "non") == 0) && (strcmp(reponse, "oui") == 0));
             }
         }
     // fin du tant que 
-	close (sock);
+	
     }
-
+close (sock);
     return EXIT_SUCCESS;
 }
