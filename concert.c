@@ -214,7 +214,7 @@ int main(int argc, char **argv)
 						perror("write concert validation");
 						exit(15);
 					}
-					printf("Réservation de %i places acceptée et payé pour le total de %i\n", reserve.nbPlaces, prix);
+					printf("Réservation de %i places acceptée et payé pour le total de %i€\n", reserve.nbPlaces, prix);
 
 					// fin transaction
 					fini = 1;
