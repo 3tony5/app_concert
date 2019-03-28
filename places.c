@@ -20,6 +20,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include "gestionnaire_concert.h"
 
 places salle[3];
@@ -83,27 +84,27 @@ int main()
    	struct sockaddr_in adresseRV;
 	int lgadresseRV;
 
-	/*création de la socket RV*/
+	// création de la socket RV
 	if ((socket_RV = socket(AF_INET, SOCK_STREAM,0)) == -1)
 	{
 		perror("socket RV");
 		exit(1);
 	}
 
-	/*preparation de l'adresse locale */
+	// Preparation de l'adresse locale
 	adresseRV.sin_family = AF_INET;
 	adresseRV.sin_port = htons((unsigned int)PORT_PLACES);
 	adresseRV.sin_addr.s_addr = htonl(INADDR_ANY);
 	lgadresseRV = sizeof(adresseRV);
 
-	/* attachement de la socket a l'adresse locale */
+	// attachement de la socket a l'adresse locale
 	if ((bind(socket_RV, (struct sockaddr *)&adresseRV, lgadresseRV)) == -1)
 	{
 		perror("bind RV");
 		exit(2);
 	}
 
-	/* declaration d'ouverture du service */
+	// déclaration d'ouverture du service
 	if (listen(socket_RV, 10) == -1)
 	{
 		perror("listen RV");
@@ -112,22 +113,24 @@ int main()
 
     afficher_places(salle);
 
-    // while 1
    
-        // On attend que concert se connecte à la socket
-	    lgadresse_concert = sizeof(adresse_concert);
-		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
-		if (socket_concert == -1)
-        {
-			perror("accept concert");
-			exit(4);
-		}
-        else
-        {
-		    printf("Application concert connecté avec succès à places !!\n");
-            fflush(stdout);
-        }
-	 while (1) {
+    // On attend que concert se connecte à la socket
+    lgadresse_concert = sizeof(adresse_concert);
+    socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
+    if (socket_concert == -1)
+    {
+        perror("accept concert");
+        exit(4);
+    }
+    else
+    {
+        printf("Application concert connecté avec succès à places !!\n");
+        fflush(stdout);
+    }
+
+    // while 1
+    while (1)
+    {
         /* Attend information transactions */
         // lecture debut transaction
         if (read(socket_concert, &place, sizeof(places)) < 0)
@@ -152,7 +155,7 @@ int main()
             }
             printf("Retour de transaction envoyé\n");
             
-        //sinon pour i de 0 à transaction
+        // sinon pour i de 0 à transaction
         }
         else
         {
@@ -170,11 +173,10 @@ int main()
 
         //Affichage du nombre de places
         afficher_places(salle);
-        
-
     
     //fin while connexion
     }
     close(socket_RV);
+
     return EXIT_SUCCESS;
 }

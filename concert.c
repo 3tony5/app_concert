@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	printf("Création de la socket places\n");
 	fflush(stdout);
 
-	/* recuperation de l'adresse IP du serveur (a partir de son nom) */
+	/* Récuperation de l'adresse IP du serveur (a partir de son nom) */
     if ((hote = gethostbyname(argv[1])) == NULL)
 	{
         perror("gethostbyname");
@@ -122,36 +122,38 @@ int main(int argc, char **argv)
 			/* Reception d'un signal */
 			continue;
 		}
-		if(socket_concert == -1)
+		if (socket_concert == -1)
 		{  /* erreur */
 			perror("accept concert");
 			exit(7);
 		}
-		/* un client est arrive : il est connecte via la socket de service */
+		/* un client est arrivé : il est connecté via la socket de service */
 		printf("Connexion acceptée !!\n");
 		fflush(stdout);
 		
 
-		/* la connexion à été accepté*/
+		/* la connexion à été acceptée */
 		int fk = fork();
 		if (fk == -1){
 			perror("fork");
 			exit (8);
 		}
 		if (fk == 0) {
-			fils=1;
-			//while transaction non fini
+			fils = 1;
+			//while transaction non finie
 			while(fini == 0)
 			{
 				printf("debut transaction\n");
 				// lit données achat
-				do{
-				if (read(socket_concert, &places, sizeof(places)) < 0)
+				do
 				{
-					perror("read concert places");
-					exit(9);
+					if (read(socket_concert, &places, sizeof(places)) < 0)
+					{
+						perror("read concert places");
+						exit(9);
+					}
 				}
-				}while(places.nbPlaces==0);
+				while (places.nbPlaces == 0);
 				
 				
 				// envoie des données à places (nb places - nb déja réservé)
@@ -175,10 +177,8 @@ int main(int argc, char **argv)
 				fflush(stdout);
 				
 				// envoie la réponse de places à achat;
+				reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
 				
-					reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
-				
-
 				if (write(socket_concert, &reserve, sizeof(places)) != sizeof(places))
 				{
 					perror("write concert reponse place");
@@ -195,14 +195,14 @@ int main(int argc, char **argv)
 						exit(13);
 					}
 
-					//attend code carte bleu
+					// attend code carte bleu
 					if (read(socket_concert, &places, sizeof(places)) < 0)
 					{
 						perror("read concert cb");
 						exit(14);
 					}
 					
-					//envoie ok
+					// envoie ok
 					if (write(socket_concert, textvalidation, strlen(textvalidation)+1) != strlen(textvalidation)+1)
 					{
 						perror("write concert validation");
@@ -210,15 +210,17 @@ int main(int argc, char **argv)
 					}
 					printf("Réservation acceptée et payé pour %i\n", places.nbPlaces);
 
-					//fin transaction
+					// fin transaction
 					fini = 1;
 
-				//fin si
-				}else{
-					reserve.nbPlaces=0;
-					areserve.nbPlaces=0;
-					places.nbPlaces=0;
-					places_res.nbPlaces=0;
+				// fin si
+				}
+				else
+				{
+					reserve.nbPlaces = 0;
+					areserve.nbPlaces = 0;
+					places.nbPlaces = 0;
+					places_res.nbPlaces = 0;
 					
 					printf("remise à zero\n");
 				}
@@ -241,12 +243,12 @@ int main(int argc, char **argv)
 			}
 			*/
 				
-		} else {
+		}
+		else
+		{
 			close(socket_concert);
 		}
 	}
-	
-	
 	
 	
 	return EXIT_SUCCESS;

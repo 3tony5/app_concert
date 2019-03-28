@@ -41,13 +41,13 @@ int main(int argc, char **argv)
 
     /* Etablir la connexion avec concert */
 
-    // creation de la socket locale
+    // création de la socket locale
     if ((sock = socket(AF_INET, SOCK_STREAM,0)) == -1) {
         perror("socket");
         exit(1);
     }
 
-    // recuperation de l'adresse IP du serveur (a partir de son nom)
+    // recupération de l'adresse IP du serveur (a partir de son nom)
     if ((hote = gethostbyname(argv[1])) == NULL)
     {
         perror("gethostbyname");
@@ -65,16 +65,16 @@ int main(int argc, char **argv)
         perror("connect concert");
         exit(3);
     }
-    // le serveur a accepte la connexion
+    // le serveur a accepté la connexion
     printf("Connexion acceptée !!\n");
     fflush(stdout);
 
 
     /* Debut du traitement des données */
 
-    //tant que transaction non terminés.
+    // tant que transaction non terminée.
     while (transFini == 0) {
-	printf("debut de transaction\n");
+	    printf("debut de transaction\n");
         //demander un certain nombre de places pour une certaine catégorie
         do
         {
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
             exit(4);
         }
 
-        // récupere le nombres de places autorisée
+        // récupere le nombre de places autorisé
         if (read(sock, &vente, sizeof(places)) < 0)
         {
             perror("read concert places");
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
                 exit(6);
             }
 
-            //demandé et envoyer code carte bleu
+            //demander et envoyer code carte bleu
             printf ("Cela vous coutera %i €\n", prix);
             printf("Veuillez entrer votre code de carte bancaire pour procéder au paiement\n");
             scanf("%i", &codeBancaire);
@@ -167,8 +167,8 @@ int main(int argc, char **argv)
             }
         }
     // fin du tant que 
-	
     }
-close (sock);
+    close (sock);
+    
     return EXIT_SUCCESS;
 }
