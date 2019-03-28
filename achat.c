@@ -160,6 +160,7 @@ int main(int argc, char **argv)
             }
         }
     // fin du tant que 
+	close (sock);
     }
 
     return EXIT_SUCCESS;

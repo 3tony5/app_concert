@@ -111,7 +111,7 @@ int main()
     afficher_places(salle);
 
     // while 1
-    while (1) {
+   
         // On attend que concert se connecte à la socket
 	    lgadresse_concert = sizeof(adresse_concert);
 		socket_concert = accept(socket_RV, (struct sockaddr *) &adresse_concert, &lgadresse_concert);
@@ -125,9 +125,8 @@ int main()
 		    printf("Application concert connecté avec succès à places !!\n");
             fflush(stdout);
         }
-
+	 while (1) {
         /* Attend information transactions */
-    
         // lecture debut transaction
         if (read(socket_concert, &place, sizeof(places)) < 0)
         {
@@ -169,7 +168,7 @@ int main()
 
         //Affichage du nombre de places
         afficher_places(salle);
-        close(socket_concert);
+        
 
     
     //fin while connexion

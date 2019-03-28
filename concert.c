@@ -139,9 +139,11 @@ int main(int argc, char **argv)
 			exit (8);
 		}
 		if (fk == 0) {
+			fils=1;
 			//while transaction non fini
 			while(fini == 0)
 			{
+				
 				// lit données achat
 				if (read(socket_concert, &places, sizeof(places)) < 0)
 				{
@@ -168,6 +170,7 @@ int main(int argc, char **argv)
 					
 				printf(">>Lecture de la réponse:\n\tCatégorie demandée %i\n\tNombre de places demandées %i\n\tDont %i étudiants\n", places_res.categorie, places_res.nbPlaces, places.nbEtudiants);
 				fflush(stdout);
+				
 				// envoie la réponse de places à achat;
 				reserve.nbPlaces = reserve.nbPlaces + places_res.nbPlaces;
 				if (write(socket_concert, &reserve, sizeof(places)) != sizeof(places))
@@ -192,7 +195,7 @@ int main(int argc, char **argv)
 						perror("read concert cb");
 						exit(14);
 					}
-
+					
 					//envoie ok
 					if (write(socket_concert, textvalidation, strlen(textvalidation)+1) != strlen(textvalidation)+1)
 					{
@@ -222,7 +225,9 @@ int main(int argc, char **argv)
 			if (write(socket_places, &reserve.nbPlaces, sizeof(places)) != sizeof(places)) {
 				perror("write places rendre places");
 				exit(16);
-			}	*/		
+			}
+			*/
+		close(socket_concert);		
 		} else {
 			close(socket_concert);
 		}
